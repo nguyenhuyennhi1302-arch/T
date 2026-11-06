@@ -101,3 +101,402 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
           </svg>
           Điều Khiển Mô Phỏng
+        </h2>
+
+        <!-- Nút thao tác chính -->
+        <div class="grid grid-cols-2 gap-3 mb-5">
+          <button id="btnPlayPause" class="w-full py-2.5 px-4 bg-emerald-600 hover:bg-emerald-500 active:scale-[0.98] text-white font-semibold rounded-xl text-sm transition-all shadow-lg shadow-emerald-900/30 flex items-center justify-center gap-2">
+            <svg id="iconPause" class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/>
+            </svg>
+            <svg id="iconPlay" class="w-4 h-4 hidden" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+            <span id="labelPlayPause">Tạm Dừng</span>
+          </button>
+          
+          <button id="btnReset" class="w-full py-2.5 px-4 bg-gray-800 hover:bg-gray-700 active:scale-[0.98] text-gray-200 font-semibold rounded-xl text-sm border border-gray-700 transition-all flex items-center justify-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+            </svg>
+            Xoá & Đặt Lại
+          </button>
+        </div>
+
+        <!-- Thanh trượt điều chỉnh tốc độ & kích thước điểm -->
+        <div class="space-y-4 text-sm">
+          <div>
+            <div class="flex justify-between items-center text-xs text-gray-400 mb-1.5">
+              <span>Số điểm mỗi khung hình (Batch Size)</span>
+              <span id="valPointsPerFrame" class="font-mono text-emerald-400 font-bold">1,000</span>
+            </div>
+            <input id="sliderSpeed" type="range" min="100" max="10000" step="100" value="1000" class="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-emerald-500">
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center text-xs text-gray-400 mb-1.5">
+              <span>Bán kính hạt điểm (Pixel)</span>
+              <span id="valPointSize" class="font-mono text-cyan-400 font-bold">0.8 px</span>
+            </div>
+            <input id="sliderPointSize" type="range" min="0.4" max="2.0" step="0.1" value="0.8" class="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-cyan-500">
+          </div>
+
+          <div>
+            <div class="flex justify-between items-center text-xs text-gray-400 mb-1.5">
+              <span>Độ trong suốt hạt (Alpha)</span>
+              <span id="valPointAlpha" class="font-mono text-amber-400 font-bold">0.75</span>
+            </div>
+            <input id="sliderAlpha" type="range" min="0.1" max="1.0" step="0.05" value="0.75" class="w-full h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-amber-500">
+          </div>
+        </div>
+      </div>
+
+      <!-- Chú giải 4 Hàm Affine & Màu sắc -->
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 shadow-xl">
+        <h2 class="text-base font-semibold text-gray-200 mb-3 flex items-center justify-between">
+          <span>Quy Tắc Biến Đổi & Màu Sắc</span>
+          <span class="text-xs px-2 py-0.5 rounded bg-gray-800 text-gray-400">p = 25% mỗi hàm</span>
+        </h2>
+        
+        <div class="space-y-2.5">
+          <!-- f1 -->
+          <div class="p-2.5 rounded-xl bg-gray-800/40 border border-emerald-900/40 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3.5 h-3.5 rounded-full bg-[#10b981] shadow-md shadow-emerald-500/50"></span>
+              <span class="font-semibold text-sm text-emerald-400">Hàm f₁</span>
+            </div>
+            <div class="font-mono text-xs text-gray-300 bg-gray-950/60 px-2 py-1 rounded">
+              (0.5y, 0.5x)
+            </div>
+            <span class="text-xs text-emerald-400 font-medium">Xanh lá</span>
+          </div>
+
+          <!-- f2 -->
+          <div class="p-2.5 rounded-xl bg-gray-800/40 border border-rose-900/40 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3.5 h-3.5 rounded-full bg-[#ef4444] shadow-md shadow-rose-500/50"></span>
+              <span class="font-semibold text-sm text-rose-400">Hàm f₂</span>
+            </div>
+            <div class="font-mono text-xs text-gray-300 bg-gray-950/60 px-2 py-1 rounded">
+              (0.5y, 0.5x + 0.5)
+            </div>
+            <span class="text-xs text-rose-400 font-medium">Đỏ</span>
+          </div>
+
+          <!-- f3 -->
+          <div class="p-2.5 rounded-xl bg-gray-800/40 border border-purple-900/40 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3.5 h-3.5 rounded-full bg-[#8b5cf6] shadow-md shadow-purple-500/50"></span>
+              <span class="font-semibold text-sm text-purple-400">Hàm f₃</span>
+            </div>
+            <div class="font-mono text-xs text-gray-300 bg-gray-950/60 px-2 py-1 rounded">
+              (0.5y + 0.5, 0.5x)
+            </div>
+            <span class="text-xs text-purple-400 font-medium">Tím</span>
+          </div>
+
+          <!-- f4 -->
+          <div class="p-2.5 rounded-xl bg-gray-800/40 border border-amber-900/40 flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <span class="w-3.5 h-3.5 rounded-full bg-[#f97316] shadow-md shadow-amber-500/50"></span>
+              <span class="font-semibold text-sm text-amber-400">Hàm f₄</span>
+            </div>
+            <div class="font-mono text-xs text-gray-300 bg-gray-950/60 px-2 py-1 rounded">
+              (-0.5y + 0.5, -0.5x + 0.5)
+            </div>
+            <span class="text-xs text-amber-400 font-medium">Cam</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Công thức Ma trận & Thuật toán -->
+      <div class="bg-gray-900 border border-gray-800 rounded-2xl p-5 shadow-xl text-xs text-gray-400">
+        <h3 class="font-semibold text-sm text-gray-200 mb-2">Đặc điểm hình học</h3>
+        <p class="leading-relaxed mb-2">
+          Hệ ma trận cơ sở <span class="font-mono text-indigo-300">A = [[0, 0.5], [0.5, 0]]</span> là phép hoán đổi trục hoành độ & tung độ kèm hệ số co tỷ lệ <span class="text-white font-mono">r = 0.5</span>. Riêng <span class="font-mono text-amber-400">f₄</span> đảo chiều phản chiếu <span class="text-white font-mono">-A</span>.
+        </p>
+        <p class="leading-relaxed">
+          Quá trình lặp ngẫu nhiên lấp đầy tập hút fractal (attractor) với 4 mảnh con tự đồng dạng mang 4 màu sắc phân biệt.
+        </p>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="text-center py-4 text-xs text-gray-500 border-t border-gray-800 mt-auto">
+    Mô phỏng Chaos Game IFS • Thực thi với HTML5 2D Canvas Context
+  </footer>
+
+  <!-- Javascript Logic -->
+  <script>
+    // Khởi tạo Canvas và Context
+    const canvas = document.getElementById('chaosCanvas');
+    const ctx = canvas.getContext('2d', { alpha: false });
+
+    // Các phần tử giao diện
+    const btnPlayPause = document.getElementById('btnPlayPause');
+    const btnReset = document.getElementById('btnReset');
+    const labelPlayPause = document.getElementById('labelPlayPause');
+    const iconPlay = document.getElementById('iconPlay');
+    const iconPause = document.getElementById('iconPause');
+    const statusBadge = document.getElementById('statusBadge');
+    
+    const sliderSpeed = document.getElementById('sliderSpeed');
+    const valPointsPerFrame = document.getElementById('valPointsPerFrame');
+    const sliderPointSize = document.getElementById('sliderPointSize');
+    const valPointSize = document.getElementById('valPointSize');
+    const sliderAlpha = document.getElementById('sliderAlpha');
+    const valPointAlpha = document.getElementById('valPointAlpha');
+
+    const statTotalPoints = document.getElementById('statTotalPoints');
+    const statFps = document.getElementById('statFps');
+    const statCurrX = document.getElementById('statCurrX');
+    const statCurrY = document.getElementById('statCurrY');
+
+    // Bảng màu cho 4 hàm tương ứng
+    // f1: Xanh lá (#10b981), f2: Đỏ (#ef4444), f3: Tím (#8b5cf6), f4: Cam (#f97316)
+    const COLORS = [
+      '#10b981', // f1 - Green
+      '#ef4444', // f2 - Red
+      '#8b5cf6', // f3 - Purple
+      '#f97316'  // f4 - Orange
+    ];
+
+    // Trạng thái ứng dụng
+    let isRunning = true;
+    let pointsPerFrame = parseInt(sliderSpeed.value, 10);
+    let pointRadius = parseFloat(sliderPointSize.value);
+    let pointAlpha = parseFloat(sliderAlpha.value);
+    let totalPoints = 0;
+    
+    // Tọa độ hiện tại (x, y)
+    let currentX = Math.random();
+    let currentY = Math.random();
+
+    // Padding để fractal nằm trọn vẹn, căn giữa trong canvas
+    const PADDING = 45;
+    let drawWidth = 0;
+    let drawHeight = 0;
+
+    // Đo lường FPS
+    let lastFrameTime = performance.now();
+    let frameCount = 0;
+    let lastFpsUpdate = performance.now();
+
+    // Cài đặt độ phân giải nội tại cho canvas theo Retina/DPI
+    function resizeCanvas() {
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      
+      // Đặt resolution theo pixel thực tế
+      const size = Math.floor(rect.width * dpr);
+      canvas.width = size;
+      canvas.height = size;
+      
+      drawWidth = size - PADDING * 2 * dpr;
+      drawHeight = size - PADDING * 2 * dpr;
+
+      // Xoá nền canvas
+      clearCanvasBackground();
+    }
+
+    function clearCanvasBackground() {
+      ctx.fillStyle = '#0a0f1d';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      // Vẽ khung viền tọa độ tham chiếu mờ
+      const dpr = window.devicePixelRatio || 1;
+      const pad = PADDING * dpr;
+      ctx.strokeStyle = 'rgba(75, 85, 99, 0.25)';
+      ctx.lineWidth = 1 * dpr;
+      ctx.strokeRect(pad, pad, drawWidth, drawHeight);
+    }
+
+    // Biến đổi tọa độ toán học [0, 1] sang toạ độ màn hình Canvas (hướng y đi lên)
+    function mathToCanvasX(x) {
+      const dpr = window.devicePixelRatio || 1;
+      return PADDING * dpr + x * drawWidth;
+    }
+
+    function mathToCanvasY(y) {
+      const dpr = window.devicePixelRatio || 1;
+      // y = 0 ở đáy, y = 1 ở đỉnh
+      return PADDING * dpr + (1 - y) * drawHeight;
+    }
+
+      <!-- Bỏ qua các bước lặp đầu tiên (warm-up) để điểm hội tụ vào attractor -->
+    function warmUp(steps = 50) {
+      for (let i = 0; i < steps; i++) {
+        stepChaosGame(false);
+      }
+    }
+
+    // Thực hiện 1 bước biến đổi Chaos Game
+    // Trả về chỉ số hàm đã thực thi [0, 1, 2, 3]
+    function stepChaosGame(draw = true) {
+      const rand = Math.random();
+      let funcIndex = 0;
+      let nextX = 0;
+      let nextY = 0;
+
+      // f1(x, y) = [0 0.5; 0.5 0][x; y] + [0; 0] = (0.5y, 0.5x)
+      if (rand < 0.25) {
+        funcIndex = 0;
+        nextX = 0.5 * currentY;
+        nextY = 0.5 * currentX;
+      }
+      // f2(x, y) = [0 0.5; 0.5 0][x; y] + [0; 0.5] = (0.5y, 0.5x + 0.5)
+      else if (rand < 0.50) {
+        funcIndex = 1;
+        nextX = 0.5 * currentY;
+        nextY = 0.5 * currentX + 0.5;
+      }
+      // f3(x, y) = [0 0.5; 0.5 0][x; y] + [0.5; 0] = (0.5y + 0.5, 0.5x)
+      else if (rand < 0.75) {
+        funcIndex = 2;
+        nextX = 0.5 * currentY + 0.5;
+        nextY = 0.5 * currentX;
+      }
+      // f4(x, y) = -[0 0.5; 0.5 0][x; y] + [0.5; 0.5] = (-0.5y + 0.5, -0.5x + 0.5)
+      else {
+        funcIndex = 3;
+        nextX = -0.5 * currentY + 0.5;
+        nextY = -0.5 * currentX + 0.5;
+      }
+
+      currentX = nextX;
+      currentY = nextY;
+
+      return funcIndex;
+    }
+
+    // Vòng lặp mô phỏng
+    function renderLoop(currentTime) {
+      if (isRunning) {
+        // Gom các điểm theo từng nhóm màu để tối ưu hóa canvas fillStyle
+        const buckets = [[], [], [], []];
+        const dpr = window.devicePixelRatio || 1;
+
+        for (let i = 0; i < pointsPerFrame; i++) {
+          const fnIdx = stepChaosGame(true);
+          const px = mathToCanvasX(currentX);
+          const py = mathToCanvasY(currentY);
+          buckets[fnIdx].push(px, py);
+        }
+
+        ctx.globalAlpha = pointAlpha;
+        const radius = pointRadius * dpr;
+
+        // Vẽ từng nhóm màu một lượt
+        for (let c = 0; c < 4; c++) {
+          const coords = buckets[c];
+          if (coords.length === 0) continue;
+
+          ctx.fillStyle = COLORS[c];
+          ctx.beginPath();
+          for (let k = 0; k < coords.length; k += 2) {
+            const x = coords[k];
+            const y = coords[k + 1];
+            // Sử dụng hình tròn nhỏ hoặc rect nhỏ cho hiệu năng cao
+            if (radius <= 1.0) {
+              ctx.rect(x - radius, y - radius, radius * 2, radius * 2);
+            } else {
+              ctx.moveTo(x + radius, y);
+              ctx.arc(x, y, radius, 0, Math.PI * 2);
+            }
+          }
+          ctx.fill();
+        }
+
+        ctx.globalAlpha = 1.0;
+        totalPoints += pointsPerFrame;
+
+        // Cập nhật thông số
+        statTotalPoints.textContent = totalPoints.toLocaleString('vi-VN');
+        statCurrX.textContent = currentX.toFixed(4);
+        statCurrY.textContent = currentY.toFixed(4);
+      }
+
+      // Tính FPS
+      frameCount++;
+      if (currentTime - lastFpsUpdate >= 500) {
+        const fps = Math.round((frameCount * 1000) / (currentTime - lastFpsUpdate));
+        statFps.textContent = fps;
+        frameCount = 0;
+        lastFpsUpdate = currentTime;
+      }
+
+      requestAnimationFrame(renderLoop);
+    }
+
+    // Khởi động / Khởi tạo lại
+    function resetSimulation() {
+      clearCanvasBackground();
+      totalPoints = 0;
+      currentX = Math.random();
+      currentY = Math.random();
+      warmUp(60);
+      statTotalPoints.textContent = '0';
+      statCurrX.textContent = currentX.toFixed(4);
+      statCurrY.textContent = currentY.toFixed(4);
+    }
+
+    // Sự kiện tương tác UI
+    btnPlayPause.addEventListener('click', () => {
+      isRunning = !isRunning;
+      const statusBadge = document.getElementById('status-badge');
+      if (isRunning) {
+        labelPlayPause.textContent = 'Tạm Dừng';
+        iconPause.classList.remove('hidden');
+        iconPlay.classList.add('hidden');
+        btnPlayPause.classList.remove('bg-amber-600', 'hover:bg-amber-500');
+        btnPlayPause.classList.add('bg-emerald-600', 'hover:bg-emerald-500');
+        statusBadge.textContent = 'Đang chạy';
+        statusBadge.className = 'font-semibold text-emerald-400';
+      } else {
+        labelPlayPause.textContent = 'Tiếp Tục';
+        iconPause.classList.add('hidden');
+        iconPlay.classList.remove('hidden');
+        btnPlayPause.classList.remove('bg-emerald-600', 'hover:bg-emerald-500');
+        btnPlayPause.classList.add('bg-amber-600', 'hover:bg-amber-500');
+        statusBadge.textContent = 'Đã tạm dừng';
+        statusBadge.className = 'font-semibold text-amber-400';
+      }
+    });
+
+    btnReset.addEventListener('click', resetSimulation);
+
+    sliderSpeed.addEventListener('input', (e) => {
+      pointsPerFrame = parseInt(e.target.value, 10);
+      valPointsPerFrame.textContent = pointsPerFrame.toLocaleString('vi-VN');
+    });
+
+    sliderPointSize.addEventListener('input', (e) => {
+      pointRadius = parseFloat(e.target.value);
+      valPointSize.textContent = pointRadius.toFixed(1) + ' px';
+    });
+
+    sliderAlpha.addEventListener('input', (e) => {
+      pointAlpha = parseFloat(e.target.value);
+      valPointAlpha.textContent = pointAlpha.toFixed(2);
+    });
+
+    // Resize listener với Debounce
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        resizeCanvas();
+        resetSimulation();
+      }, 150);
+    });
+
+    // Bắt đầu khi trang tải xong
+    window.onload = () => {
+      resizeCanvas();
+      resetSimulation();
+      requestAnimationFrame(renderLoop);
+    };
+  </script>
+</body>
+</html>
