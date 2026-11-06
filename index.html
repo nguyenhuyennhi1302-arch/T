@@ -125,6 +125,24 @@
 
         <!-- Thanh trượt điều chỉnh tốc độ & kích thước điểm -->
         <div class="space-y-4 text-sm">
+          <!-- Điều khiển tham số a -->
+          <div class="p-3 bg-rose-950/20 border border-rose-800/40 rounded-xl">
+            <div class="flex justify-between items-center text-xs mb-1.5">
+              <span class="text-rose-300 font-semibold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                Tham số dịch chuyển <span class="font-mono text-sm text-rose-400 font-bold">a</span> (hàm f₂)
+              </span>
+              <span id="valParamA" class="font-mono text-rose-400 font-bold text-sm bg-rose-900/40 px-2 py-0.5 rounded border border-rose-700/50">0.10</span>
+            </div>
+            <input id="sliderParamA" type="range" min="-0.5" max="1.0" step="0.01" value="0.1" class="w-full h-2 bg-gray-700 rounded-lg appearance-none cursor-pointer accent-rose-500">
+            <div class="flex justify-between text-[10px] text-gray-500 font-mono mt-1">
+              <span>-0.50</span>
+              <span>0.00</span>
+              <span>0.10 (Mặc định)</span>
+              <span>1.00</span>
+            </div>
+          </div>
+
           <div>
             <div class="flex justify-between items-center text-xs text-gray-400 mb-1.5">
               <span>Số điểm mỗi khung hình (Batch Size)</span>
@@ -177,8 +195,8 @@
               <span class="w-3.5 h-3.5 rounded-full bg-[#ef4444] shadow-md shadow-rose-500/50"></span>
               <span class="font-semibold text-sm text-rose-400">Hàm f₂</span>
             </div>
-            <div class="font-mono text-xs text-gray-300 bg-gray-950/60 px-2 py-1 rounded">
-              (0.5y, 0.5x + 0.5)
+            <div id="formulaF2" class="font-mono text-xs text-gray-300 bg-gray-950/60 px-2 py-1 rounded">
+              (0.5y + 0.10, 0.5x + 0.5)
             </div>
             <span class="text-xs text-rose-400 font-medium">Đỏ</span>
           </div>
@@ -248,6 +266,10 @@
     const sliderAlpha = document.getElementById('sliderAlpha');
     const valPointAlpha = document.getElementById('valPointAlpha');
 
+    const sliderParamA = document.getElementById('sliderParamA');
+    const valParamA = document.getElementById('valParamA');
+    const formulaF2 = document.getElementById('formulaF2');
+
     const statTotalPoints = document.getElementById('statTotalPoints');
     const statFps = document.getElementById('statFps');
     const statCurrX = document.getElementById('statCurrX');
@@ -267,6 +289,7 @@
     let pointsPerFrame = parseInt(sliderSpeed.value, 10);
     let pointRadius = parseFloat(sliderPointSize.value);
     let pointAlpha = parseFloat(sliderAlpha.value);
+    let paramA = parseFloat(sliderParamA.value); // Khởi tạo a = 0.1
     let totalPoints = 0;
     
     // Tọa độ hiện tại (x, y)
@@ -345,10 +368,10 @@
         nextX = 0.5 * currentY;
         nextY = 0.5 * currentX;
       }
-      // f2(x, y) = [0 0.5; 0.5 0][x; y] + [0; 0.5] = (0.5y, 0.5x + 0.5)
+      // f2(x, y) = [0 0.5; 0.5 0][x; y] + [a; 0.5] = (0.5y + a, 0.5x + 0.5)
       else if (rand < 0.50) {
         funcIndex = 1;
-        nextX = 0.5 * currentY;
+        nextX = 0.5 * currentY + paramA;
         nextY = 0.5 * currentX + 0.5;
       }
       // f3(x, y) = [0 0.5; 0.5 0][x; y] + [0.5; 0] = (0.5y + 0.5, 0.5x)
@@ -479,6 +502,14 @@
     sliderAlpha.addEventListener('input', (e) => {
       pointAlpha = parseFloat(e.target.value);
       valPointAlpha.textContent = pointAlpha.toFixed(2);
+    });
+
+    // Sự kiện điều chỉnh tham số a
+    sliderParamA.addEventListener('input', (e) => {
+      paramA = parseFloat(e.target.value);
+      valParamA.textContent = paramA.toFixed(2);
+      formulaF2.textContent = `(0.5y ${paramA >= 0 ? '+ ' + paramA.toFixed(2) : '- ' + Math.abs(paramA).toFixed(2)}, 0.5x + 0.5)`;
+      resetSimulation();
     });
 
     // Resize listener với Debounce
